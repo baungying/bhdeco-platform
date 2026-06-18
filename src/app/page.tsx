@@ -52,7 +52,13 @@ function Floor({id,num,name,accent,title,titleB,body,cta,ctaHref,badge,reverse,b
               {title}<br/><span style={{fontStyle:"italic",background:`linear-gradient(135deg,${accent},${accent}99)`,WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",backgroundClip:"text"}}>{titleB}</span>
             </h2>
             <p style={{color:"#7A8FA8",fontSize:".97rem",lineHeight:"1.88",maxWidth:"440px",marginBottom:"2.25rem"}}>{body}</p>
-            {cta&&ctaHref&&<Link href={ctaHref} className="btn-gold" style={{background:`linear-gradient(135deg,${accent},#9A7020)`}}>{cta} →</Link>}
+            {cta&&ctaHref&&(
+              ctaHref.startsWith("http")
+                ?<a href={ctaHref} target="_blank" rel="noopener noreferrer" className="btn-gold" style={{background:`linear-gradient(135deg,${accent},#9A7020)`}}>{cta} →</a>
+                :ctaHref.startsWith("mailto:")
+                  ?<a href={ctaHref} className="btn-gold" style={{background:`linear-gradient(135deg,${accent},#9A7020)`}}>{cta} →</a>
+                  :<Link href={ctaHref} className="btn-gold" style={{background:`linear-gradient(135deg,${accent},#9A7020)`}}>{cta} →</Link>
+            )}
           </div>
         </Reveal>
         <Reveal delay={.15} style={{direction:"ltr"}}>
@@ -205,9 +211,22 @@ function PanelCore({accent,accent2}:{accent:string;accent2:string}){
               strokeDasharray={i%2===0?"8 5":"5 7"}
               style={{animation:`${i%2===0?"bhSpin1":"bhSpin2"} ${14+i*9}s linear infinite`,transformOrigin:"140px 140px"}}/>
           ))}
-          {Array.from({length:12},(_,i)=>{const a=i*30*Math.PI/180;return<line key={i} x1={140+46*Math.cos(a)} y1={140+46*Math.sin(a)} x2={140+112*Math.cos(a)} y2={140+112*Math.sin(a)} stroke={i%3===0?`${accent}26`:i%3===1?"rgba(30,109,213,.18)":"rgba(0,212,255,.13)"} strokeWidth=".7"/>;} )}
-          {[0,60,120,180,240,300].map((a,i)=>(
-            <circle key={i} cx={140+112*Math.cos(a*Math.PI/180)} cy={140+112*Math.sin(a*Math.PI/180)} r={i%2===0?4:3} fill={i%2===0?accent:"#1E6DD5"} opacity=".85" style={{animation:`bhBlink ${1.5+i*.3}s ease-in-out infinite`,animationDelay:`${i*.2}s`}}/>
+          {([
+            [186,140,252,140],[179.8372,163,236.9948,196],[163,179.8372,196,236.9948],
+            [140,186,140,252],[117,179.8372,84,236.9948],[100.1628,163,43.0052,196],
+            [94,140,28,140],[100.1628,117,43.0052,84],[117,100.1628,84,43.0052],
+            [140,94,140,28],[163,100.1628,196,43.0052],[179.8372,117,236.9948,84],
+          ] as [number,number,number,number][]).map(([x1,y1,x2,y2],i)=>(
+            <line key={i} x1={x1} y1={y1} x2={x2} y2={y2}
+              stroke={i%3===0?`${accent}26`:i%3===1?"rgba(30,109,213,.18)":"rgba(0,212,255,.13)"}
+              strokeWidth=".7"/>
+          ))}
+          {([
+            [252,140],[196,236.9948],[84,236.9948],[28,140],[84,43.0052],[196,43.0052],
+          ] as [number,number][]).map(([cx,cy],i)=>(
+            <circle key={i} cx={cx} cy={cy} r={i%2===0?4:3}
+              fill={i%2===0?accent:"#1E6DD5"} opacity=".85"
+              style={{animation:`bhBlink ${1.5+i*.3}s ease-in-out infinite`,animationDelay:`${i*.2}s`}}/>
           ))}
           <circle cx="140" cy="140" r="38" fill="rgba(1,4,8,.95)" stroke={accent} strokeWidth="1.8"/>
           <circle cx="140" cy="140" r="28" fill="rgba(6,12,28,.95)" stroke="rgba(30,109,213,.4)" strokeWidth="1"/>
@@ -346,6 +365,59 @@ export default function Home(){
         </div>
       </section>
 
+
+      {/* ═══ HOW BH DECO AI WORKS ═══ */}
+      <section style={{background:"#010408",padding:"7rem 2rem 6rem",borderTop:"1px solid rgba(255,255,255,.04)"}}>
+        <div style={{maxWidth:"1160px",margin:"0 auto"}}>
+          <div style={{textAlign:"center",marginBottom:"5rem"}}>
+            <p className="mono" style={{fontSize:".6rem",color:accent,letterSpacing:".22em",marginBottom:".75rem"}}>THE PROCESS</p>
+            <h2 className="fd" style={{fontSize:"clamp(2.2rem,4.5vw,3.8rem)",fontWeight:"300",color:"#EDE8DC",lineHeight:1.1}}>
+              How BH DECO AI <span style={{fontStyle:"italic",color:accent}}>Works</span>
+            </h2>
+            <p style={{color:"#7A8FA8",maxWidth:"500px",margin:"1.25rem auto 0",fontSize:".95rem",lineHeight:1.85}}>
+              From a single photo to a real built project — one connected AI workflow.
+            </p>
+          </div>
+
+          {/* Steps row */}
+          <div style={{display:"grid",gridTemplateColumns:"repeat(6,1fr)",gap:"0",position:"relative"}} className="bh-how-grid">
+            <div style={{position:"absolute",top:"51px",left:"calc(100%/12)",right:"calc(100%/12)",height:"1px",background:`linear-gradient(90deg,transparent,${accent}28,${accent}55,${accent}55,${accent}28,transparent)`,zIndex:0}} className="bh-how-line"/>
+            {([
+              {step:"01",icon:"📸",label:"Upload Photo",       desc:"Any room. Any angle."},
+              {step:"02",icon:"🧠",label:"AI Understands",     desc:"Layout, light, dimensions."},
+              {step:"03",icon:"🎨",label:"AI Interior Design", desc:"Photorealistic concepts."},
+              {step:"04",icon:"🪑",label:"Furniture Engine",   desc:"Production blueprints."},
+              {step:"05",icon:"📦",label:"3D Models",          desc:"SketchUp & export files."},
+              {step:"06",icon:"🏡",label:"Real Project",       desc:"BH builds it for real."},
+            ] as {step:string;icon:string;label:string;desc:string}[]).map(({step,icon,label,desc},i)=>(
+              <div key={step} style={{display:"flex",flexDirection:"column",alignItems:"center",textAlign:"center",padding:"0 .5rem",position:"relative",zIndex:1}}>
+                <div style={{
+                  width:"102px",height:"102px",borderRadius:"50%",flexShrink:0,
+                  background:i===0||i===5?`linear-gradient(135deg,${accent},#8B6820)`:"rgba(255,255,255,.03)",
+                  border:i===0||i===5?"none":`1px solid ${accent}${i===2||i===3?"66":"2e"}`,
+                  display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",
+                  marginBottom:"1.5rem",
+                  boxShadow:i===0||i===5?`0 0 36px ${accent}33`:"none",
+                  transition:"all .3s",
+                }}>
+                  <span style={{fontSize:"1.65rem",marginBottom:".15rem"}}>{icon}</span>
+                  <span className="mono" style={{fontSize:".46rem",color:i===0||i===5?"#010408":"#2E4060",letterSpacing:".1em"}}>{step}</span>
+                </div>
+                <p style={{fontSize:".8rem",fontWeight:"600",color:"#EDE8DC",marginBottom:".35rem",lineHeight:1.3}}>{label}</p>
+                <p style={{fontSize:".7rem",color:"#7A8FA8",lineHeight:1.6}}>{desc}</p>
+              </div>
+            ))}
+          </div>
+
+          <div style={{textAlign:"center",marginTop:"5rem"}}>
+            <Link href="https://bh-deco-ai.vercel.app" target="_blank" rel="noopener noreferrer"
+              className="btn-gold" style={{background:`linear-gradient(135deg,${accent},#9A7020)`,fontSize:".8rem",padding:"1rem 2.5rem"}}>
+              Start Your Project →
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* ── Scan divider ── */}
       {[accent,"#8B5CF6","#4A9EFF",accent,"#00D4FF",accent].map((c,i)=>(
         <div key={i} id={["","f2","f3","f4","f5","top"][i]||""} style={{height:"1px",background:`linear-gradient(90deg,transparent,${c}44,transparent)`,margin:0}}/>
@@ -387,7 +459,7 @@ export default function Home(){
       {/* ═══ 4F ═══ */}
       <section style={{background:"linear-gradient(180deg,#010408 0%,#040e08 40%,#040e08 60%,#010408 100%)"}}>
         <Floor id="f4" num="4F" name="FURNITURE FACTORY" accent={accent}
-          title={t.f4_title} titleB={t.f4_accent} body={t.f4_body} badge={t.coming_soon} reverse>
+          title={t.f4_title} titleB={t.f4_accent} body={t.f4_body} reverse>
           <div style={{width:"100%",height:"420px",borderRadius:"16px",overflow:"hidden",backgroundImage:"url('/images/home/furniture-factory.jpg')",backgroundSize:"cover",backgroundPosition:"center",backgroundColor:"#010610"}}/>
         </Floor>
       </section>
@@ -397,7 +469,7 @@ export default function Home(){
       {/* ═══ 5F ═══ */}
       <section style={{background:"linear-gradient(180deg,#010408 0%,#020910 40%,#020910 60%,#010408 100%)"}}>
         <Floor id="f5" num="5F" name="BLUEPRINT CENTER" accent="#00D4FF"
-          title={t.f5_title} titleB={t.f5_accent} body={t.f5_body} badge={t.coming_soon} cta="Join Early Access" ctaHref="mailto:support@bhdeco.ai?subject=Blueprint Early Access">
+          title={t.f5_title} titleB={t.f5_accent} body={t.f5_body} cta="View Pricing" ctaHref="/pricing">
           <div style={{width:"100%",height:"420px",borderRadius:"16px",overflow:"hidden",backgroundImage:"url('/images/home/blueprint-center.jpg')",backgroundSize:"cover",backgroundPosition:"center",backgroundColor:"#00050d"}}/>
         </Floor>
       </section>
