@@ -1,0 +1,35 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garant:ital,wght@0,200;0,300;0,400;0,600;1,200;1,300;1,400&family=Inter:wght@200;300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap');
+
+:root {
+  --void:#010408;--deep:#040c1c;--navy:#06112a;
+  --gold:#D4A73D;--gold2:#F0C040;--gold3:#8B6820;
+  --blue:#1E6DD5;--blue2:#4A9EFF;--cyan:#00D4FF;
+  --purple:#8B5CF6;--cream:#EDE8DC;--dim:#7A8FA8;--muted:#2E4060;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;background:#010408}
+body{background:#010408 !important;color:#EDE8DC !important;font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+#__next{background:#010408}
+
+.fd{font-family:'Cormorant Garant',serif}
+.mono{font-family:'JetBrains Mono',monospace}
+.gt{background:linear-gradient(135deg,#F0C040 0%,#D4A73D 45%,#9A7020 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:#010408}::-webkit-scrollbar-thumb{background:#8B6820;border-radius:2px}
+.btn-gold{display:inline-flex;align-items:center;gap:.5rem;background:linear-gradient(135deg,#D4A73D,#9A7020);color:#010408;font-weight:700;font-family:'Inter',sans-serif;font-size:.76rem;letter-spacing:.08em;text-transform:uppercase;padding:.95rem 2.4rem;border-radius:4px;border:none;cursor:pointer;text-decoration:none;transition:all .3s}
+.btn-gold:hover{transform:translateY(-2px);box-shadow:0 14px 40px rgba(212,167,61,.45)}
+.btn-ghost{display:inline-flex;align-items:center;gap:.5rem;background:rgba(255,255,255,.04);color:#EDE8DC;font-weight:400;font-family:'Inter',sans-serif;font-size:.76rem;letter-spacing:.08em;text-transform:uppercase;padding:.95rem 2.4rem;border-radius:4px;border:1px solid rgba(255,255,255,.12);cursor:pointer;text-decoration:none;transition:all .3s;backdrop-filter:blur(8px)}
+.btn-ghost:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.22);transform:translateY(-1px)}
+.btn-outline{display:inline-flex;align-items:center;gap:.5rem;background:transparent;color:#D4A73D;font-weight:600;font-family:'Inter',sans-serif;font-size:.76rem;letter-spacing:.08em;text-transform:uppercase;padding:.95rem 2.4rem;border-radius:4px;border:1px solid rgba(212,167,61,.35);cursor:pointer;text-decoration:none;transition:all .3s}
+.btn-outline:hover{border-color:#D4A73D;background:rgba(212,167,61,.07);transform:translateY(-1px)}
+@keyframes bhFadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+@keyframes bhFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes bhBlink{0%,100%{opacity:1}50%{opacity:.25}}
+@keyframes bhSpin1{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes bhSpin2{from{transform:rotate(0deg)}to{transform:rotate(-360deg)}}
+@keyframes bhOrbit{from{transform:rotate(0deg) translateX(var(--r,72px)) rotate(0deg)}to{transform:rotate(360deg) translateX(var(--r,72px)) rotate(-360deg)}}
+@keyframes bhRise{0%{transform:translateY(0);opacity:0}10%{opacity:.5}90%{opacity:.5}100%{transform:translateY(-100vh);opacity:0}}
+@keyframes langFade{from{opacity:0;transform:translateY(-8px) scale(.96)}to{opacity:1;transform:none}}
+@keyframes scanV{0%,100%{transform:translateY(0);opacity:0}5%,95%{opacity:.6}100%{transform:translateY(100vh)}}
+@keyframes wbreathe{0%,100%{opacity:.6}50%{opacity:1}}
+@keyframes bhReveal{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:none}}
