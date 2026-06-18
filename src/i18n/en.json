@@ -17,7 +17,7 @@
   "nav_ai": "AI Design",
   "nav_furniture": "Furniture",
   "nav_products": "Products",
-  "nav_courses": "Courses",
+  "nav_courses": "3D Models",
   "nav_pricing": "Pricing",
   "nav_recharge": "Recharge",
   "nav_about": "About",
@@ -51,7 +51,5 @@
   "f5_label": "5F · BLUEPRINT CENTER",
   "top_label": "TOP FLOOR · BH AI CORE",
   "inquiry": "Send Inquiry",
-  "view_all": "View All",
-  "nav_login": "Login",
-  "nav_dashboard": "Dashboard"
+  "view_all": "View All"
 }

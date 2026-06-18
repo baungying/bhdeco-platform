@@ -17,7 +17,7 @@
   "nav_ai": "AI ออกแบบ",
   "nav_furniture": "เฟอร์นิเจอร์",
   "nav_products": "สินค้า",
-  "nav_courses": "คอร์ส",
+  "nav_courses": "โมเดล 3D",
   "nav_pricing": "ราคา",
   "nav_recharge": "เติมเครดิต",
   "nav_about": "เกี่ยวกับ",
@@ -51,7 +51,5 @@
   "f5_label": "5F · ศูนย์แบบพิมพ์เขียว",
   "top_label": "ชั้นบนสุด · BH AI CORE",
   "inquiry": "ส่งคำถาม",
-  "view_all": "ดูทั้งหมด",
-  "nav_login": "เข้าสู่ระบบ",
-  "nav_dashboard": "แดชบอร์ด"
+  "view_all": "ดูทั้งหมด"
 }

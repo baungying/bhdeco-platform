@@ -19,7 +19,7 @@ export default function Footer({ accent="#D4A73D" }: { accent?: string }) {
 
   const cols = [
     { title:"Platform", links:[["/",t.nav_home],["/ai-design",t.nav_ai],["/furniture",t.nav_furniture],["/products",t.nav_products],["/courses",t.nav_courses]] },
-    { title:"Company", links:[["/pricing",t.nav_pricing],["/recharge",t.nav_recharge],["/about",t.nav_about],["/contact",t.nav_contact]] },
+    { title:"Company", links:[["/pricing",t.nav_pricing],["/dashboard","Dashboard"],["/about",t.nav_about],["/contact",t.nav_contact]] },
     { title:"Legal", links:[["/privacy","Privacy Policy"],["/terms","Terms of Service"],["/refund","Refund Policy"]] },
   ];
 

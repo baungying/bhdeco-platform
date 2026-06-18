@@ -17,7 +17,7 @@
   "nav_ai": "AI ဒီဇိုင်း",
   "nav_furniture": "ပရိဘောဂ",
   "nav_products": "ထုတ်ကုန်",
-  "nav_courses": "သင်တန်း",
+  "nav_courses": "3D မော်ဒယ်များ",
   "nav_pricing": "စျေးနှုန်း",
   "nav_recharge": "ဖြည့်တင်း",
   "nav_about": "အကြောင်း",
@@ -51,7 +51,5 @@
   "f5_label": "5F · ဗလာပုံဌာန",
   "top_label": "အထက်ဆုံး · BH AI ဦးနှောက်",
   "inquiry": "အော်ဒါပေးပို့ရန်",
-  "view_all": "အားလုံးကြည့်ရန်",
-  "nav_login": "ဝင်ရောက်ရန်",
-  "nav_dashboard": "Dashboard"
+  "view_all": "အားလုံးကြည့်ရန်"
 }
