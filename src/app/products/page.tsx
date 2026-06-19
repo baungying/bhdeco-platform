@@ -1,110 +1,209 @@
 "use client";
+import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SiteImage from "@/components/SiteImage";
-import type { SiteImageKey } from "@/config/siteImages";
+import { supabase } from "@/lib/supabase";
 
-const categories=[
-  {id:"c-channel",  label:"C Channel Frame",      icon:"🔩"},
-  {id:"container",  label:"Container House",       icon:"📦"},
-  {id:"hardware",   label:"Hardware Accessories",  icon:"🔧"},
-  {id:"board",      label:"Boards & Panels",       icon:"🪵"},
-  {id:"floor",      label:"Floor Material",        icon:"🟫"},
-  {id:"wall",       label:"Wall & Ceiling",        icon:"🎨"},
-  {id:"mobihome",   label:"Mobihome",              icon:"🏡"},
+const G = "#D4A73D";
+
+// Categories match admin exactly
+const CATS = [
+  { id:"All",                 label:"All",                 icon:"◈"  },
+  { id:"C Channel Frame",     label:"C Channel Frame",     icon:"🔩" },
+  { id:"Light Steel",         label:"Light Steel",         icon:"🏗️" },
+  { id:"Board",               label:"Board",               icon:"🪵" },
+  { id:"Flooring",            label:"Flooring",            icon:"🟫" },
+  { id:"Wall Panel",          label:"Wall Panel",          icon:"🎨" },
+  { id:"Hardware",            label:"Hardware",            icon:"🔧" },
+  { id:"Furniture",           label:"Furniture",           icon:"🪑" },
+  { id:"Cabinet Accessories", label:"Cabinet Accessories", icon:"🗄️" },
+  { id:"Mobihome",            label:"Mobihome",            icon:"🏡" },
+  { id:"Other",               label:"Other",               icon:"📦" },
 ];
 
-const products: {cat:string;name:string;desc:string;spec:string;material:string;imgKey:SiteImageKey}[]=[
-  // C Channel Frame
-  {cat:"c-channel",name:"C75 Wall Stud",         desc:"Standard C75 light gauge steel stud for interior partition walls.",                   spec:"75×45×0.6mm / 3m",          material:"Galvanised G550 Steel",         imgKey:"productSteel"},
-  {cat:"c-channel",name:"C90 Heavy Stud",         desc:"Heavy-duty C90 stud for load-bearing partition and ceiling applications.",            spec:"90×45×0.8mm / 3m",          material:"Galvanised G550 Steel",         imgKey:"productSteel"},
-  {cat:"c-channel",name:"Track & Omega Runner",   desc:"Floor and ceiling tracks plus omega runners for complete framing systems.",            spec:"Standard & custom lengths",   material:"Galvanised Steel",              imgKey:"productSteel"},
-  // Container House
-  {cat:"container", name:"20ft Standard Container",desc:"20ft modified shipping container with insulation, windows and interior finish.",      spec:"6.0×2.4×2.6m",              material:"Corten Steel / Rock Wool Panel",imgKey:"productContainer"},
-  {cat:"container", name:"40ft Living Container",  desc:"40ft container converted to fully fitted living unit with kitchen and bathroom.",     spec:"12.0×2.4×2.6m",             material:"Corten Steel / SIP Panel",      imgKey:"productContainer"},
-  {cat:"container", name:"Office Container Unit",  desc:"Double-stacked office container with electrical fit-out and AC provision.",           spec:"6.0×2.4×2.6m per unit",     material:"Corten Steel / Insulated Panel",imgKey:"productContainer"},
-  // Hardware Accessories
-  {cat:"hardware",  name:"Soft-Close Hinges",      desc:"Full-overlay concealed hinges with integrated soft-close damper for cabinets.",       spec:"35mm cup / 110° opening",    material:"Zinc Alloy",                    imgKey:"productPanels"},
-  {cat:"hardware",  name:"Drawer Slide System",    desc:"Full-extension undermount drawer slides with push-to-open option.",                    spec:"300–600mm lengths",          material:"Cold-rolled Steel",             imgKey:"productPanels"},
-  {cat:"hardware",  name:"Wardrobe Hardware Set",  desc:"Hanging rails, shelf supports, trouser racks and corner solutions for wardrobes.",     spec:"Standard & custom sets",     material:"Aluminium / Zinc Alloy",        imgKey:"productPanels"},
-  // Furniture Board
-  {cat:"board",     name:"Melamine MDF Board",     desc:"E1-grade MDF with melamine surface. Wide colour and texture range available.",         spec:"1220×2440mm / 15–18mm",     material:"MDF Core / Melamine Surface",   imgKey:"productFurniture"},
-  {cat:"board",     name:"Moisture-Resistant MDF", desc:"Green-core MR-MDF for bathroom vanity, kitchen, and humid area applications.",         spec:"1220×2440mm / 12–18mm",     material:"MR-MDF Core / Melamine",        imgKey:"productFurniture"},
-  {cat:"board",     name:"PVC Foam Board",          desc:"Lightweight PVC foam board for cabinet backing, ceiling panels and signage.",           spec:"1220×2440mm / 3–18mm",      material:"PVC Foam",                      imgKey:"productFurniture"},
-  // Floor Material
-  {cat:"floor",     name:"SPC Rigid Core Floor",   desc:"Stone plastic composite flooring — 100% waterproof, suitable for all areas.",          spec:"182×1220mm / 4–6mm",        material:"SPC Core / Wear Layer",         imgKey:"productWardrobe"},
-  {cat:"floor",     name:"Laminate Floor 12mm",    desc:"AC4-rated laminate floor with synchronised emboss texture and click system.",           spec:"195×1285mm / 12mm",         material:"HDF Core / Melamine Surface",   imgKey:"productWardrobe"},
-  {cat:"floor",     name:"Luxury Vinyl Tile",       desc:"LVT with realistic stone and wood visuals. Glue-down or click installation.",           spec:"457×457mm or plank format", material:"PVC / Fibreglass Core",         imgKey:"productWardrobe"},
-  // Wall Material
-  {cat:"wall",      name:"WPC Decorative Panel",   desc:"Wood plastic composite wall panel. Interior feature wall and partition cladding.",      spec:"150×10mm / custom length",  material:"WPC (Wood + PVC Composite)",    imgKey:"productPanels"},
-  {cat:"wall",      name:"PVC Ceiling & Wall Panel",desc:"Moisture-proof PVC panel for ceilings, bathrooms, and commercial interiors.",          spec:"250×6000mm / 8mm",          material:"PVC with UV coating",           imgKey:"productPanels"},
-  {cat:"wall",      name:"Gypsum Board 12.5mm",    desc:"Standard gypsum board for drylining, partition walls, and suspended ceilings.",         spec:"1200×2400mm / 12.5mm",      material:"Gypsum Core / Paper Face",      imgKey:"productPanels"},
-  // Mobihome
-  {cat:"mobihome",  name:"Mobihome Classic Unit",  desc:"Prefabricated modular home with full interior finish and utility connections.",         spec:"30–60 sqm options",          material:"SIP Panel / Light Steel Frame", imgKey:"productMobihome"},
-  {cat:"mobihome",  name:"Tiny House Prefab",       desc:"Compact single-level prefab unit designed for urban infill and holiday use.",           spec:"25–40 sqm",                 material:"SIP / Timber Frame Hybrid",     imgKey:"productMobihome"},
-  {cat:"mobihome",  name:"Custom Modular Design",  desc:"Multi-module configurations designed to specification. Studio to 4-bedroom.",           spec:"Custom — from 40 sqm",       material:"SIP / Steel / Timber options",  imgKey:"productMobihome"},
-];
+interface Product {
+  id:              string;
+  name:            string;
+  category:        string;
+  sub_category:    string;
+  price:           string;
+  description:     string;
+  cover_image_url: string;
+  featured:        boolean;
+}
 
 export default function Products() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading,  setLoading]  = useState(true);
+  const [error,    setError]    = useState("");
+  const [active,   setActive]   = useState("All");
+
+  useEffect(() => {
+    supabase
+      .from("cms_products")
+      .select("id,name,category,sub_category,price,description,cover_image_url,featured")
+      .eq("active", true)
+      .order("sort_order", { ascending: true })
+      .order("created_at",  { ascending: false })
+      .then(({ data, error: err }) => {
+        if (err) { setError("Failed to load products."); setLoading(false); return; }
+        setProducts((data ?? []).map(p => ({
+          id:              String(p.id              ?? ""),
+          name:            String(p.name            ?? ""),
+          category:        String(p.category        ?? ""),
+          sub_category:    String(p.sub_category    ?? ""),
+          price:           String(p.price           ?? ""),
+          description:     String(p.description     ?? ""),
+          cover_image_url: String(p.cover_image_url ?? ""),
+          featured:        Boolean(p.featured),
+        })));
+        setLoading(false);
+      });
+  }, []);
+
+  // Categories that actually have products, plus "All"
+  const populated = CATS.filter(c =>
+    c.id === "All" || products.some(p => p.category === c.id)
+  );
+
+  const filtered = active === "All"
+    ? products
+    : products.filter(p => p.category === active);
+
+  // Group for section display when showing All
+  const groups = active === "All"
+    ? populated.filter(c => c.id !== "All")
+    : populated.filter(c => c.id === active);
+
   return (
-    <div style={{background:"#010408",color:"#EDE8DC",minHeight:"100vh"}}>
+    <div style={{ background:"#010408", color:"#EDE8DC", minHeight:"100vh" }}>
       <Navbar/>
 
       {/* Hero */}
       <SiteImage imageKey="productsHero" asBackground style={{
-        padding:"9rem 2rem 5rem",textAlign:"center",position:"relative",
-        minHeight:"55vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",
+        padding:"9rem 2rem 5rem", textAlign:"center", position:"relative",
+        minHeight:"55vh", display:"flex", flexDirection:"column",
+        alignItems:"center", justifyContent:"center",
       }}>
-        <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,rgba(1,4,8,.92) 0%,rgba(1,4,8,.82) 50%,rgba(1,4,8,.96) 100%)"}}/>
-        <div style={{position:"relative",zIndex:1}}>
-          <p style={{fontFamily:"monospace",fontSize:".6rem",color:"#D4A73D",letterSpacing:".22em",marginBottom:"1rem"}}>BLESSING HOME PRODUCTS</p>
-          <h1 className="fd" style={{fontSize:"clamp(2.5rem,6vw,4.5rem)",fontWeight:"300",marginBottom:"1.25rem"}}>Premium <span style={{fontStyle:"italic",color:"#D4A73D"}}>Products</span></h1>
-          <p style={{color:"#7A8FA8",maxWidth:"520px",margin:"0 auto",lineHeight:"1.9"}}>From light steel framing and container houses to premium boards, wall systems and modular homes — discover products engineered for modern construction.</p>
+        <div style={{ position:"absolute", inset:0, background:"linear-gradient(180deg,rgba(1,4,8,.92) 0%,rgba(1,4,8,.82) 50%,rgba(1,4,8,.96) 100%)" }}/>
+        <div style={{ position:"relative", zIndex:1 }}>
+          <p style={{ fontFamily:"monospace", fontSize:".6rem", color:G, letterSpacing:".22em", marginBottom:"1rem" }}>BLESSING HOME PRODUCTS</p>
+          <h1 className="fd" style={{ fontSize:"clamp(2.5rem,6vw,4.5rem)", fontWeight:"300", marginBottom:"1.25rem" }}>
+            Premium <span style={{ fontStyle:"italic", color:G }}>Products</span>
+          </h1>
+          <p style={{ color:"#7A8FA8", maxWidth:"520px", margin:"0 auto", lineHeight:"1.9" }}>
+            From light steel framing and container houses to premium boards, wall systems and modular homes — discover products engineered for modern construction.
+          </p>
         </div>
       </SiteImage>
 
-      {/* Filter tabs */}
-      <div style={{padding:"1.75rem",background:"rgba(1,4,8,.95)",borderBottom:"1px solid rgba(255,255,255,.06)",position:"sticky",top:"64px",zIndex:100,backdropFilter:"blur(20px)"}}>
-        <div style={{maxWidth:"1280px",margin:"0 auto",display:"flex",gap:".5rem",flexWrap:"wrap",justifyContent:"center"}}>
-          {categories.map(c=>(
-            <a key={c.id} href={`#${c.id}`} style={{display:"flex",alignItems:"center",gap:".4rem",padding:".4rem 1rem",background:"rgba(255,255,255,.04)",border:"1px solid rgba(255,255,255,.08)",borderRadius:"100px",textDecoration:"none",color:"#7A8FA8",fontSize:".76rem",transition:"all .2s"}}
-              onMouseEnter={e=>{const el=e.currentTarget as HTMLElement;el.style.borderColor="#D4A73D44";el.style.color="#D4A73D";}}
-              onMouseLeave={e=>{const el=e.currentTarget as HTMLElement;el.style.borderColor="rgba(255,255,255,.08)";el.style.color="#7A8FA8";}}>
+      {/* Sticky filter tabs */}
+      <div style={{ padding:"1.75rem", background:"rgba(1,4,8,.95)", borderBottom:"1px solid rgba(255,255,255,.06)", position:"sticky", top:"64px", zIndex:100, backdropFilter:"blur(20px)" }}>
+        <div style={{ maxWidth:"1280px", margin:"0 auto", display:"flex", gap:".5rem", flexWrap:"wrap", justifyContent:"center" }}>
+          {populated.map(c => (
+            <button key={c.id} onClick={() => setActive(c.id)}
+              style={{
+                display:"flex", alignItems:"center", gap:".4rem",
+                padding:".4rem 1rem",
+                background: active===c.id ? "rgba(212,167,61,.12)" : "rgba(255,255,255,.04)",
+                border: `1px solid ${active===c.id ? "rgba(212,167,61,.4)" : "rgba(255,255,255,.08)"}`,
+                borderRadius:"100px", cursor:"pointer",
+                color: active===c.id ? G : "#7A8FA8",
+                fontSize:".76rem", transition:"all .2s", outline:"none",
+                fontFamily:"inherit",
+              }}
+              onMouseEnter={e => { if(active!==c.id){ (e.currentTarget as HTMLElement).style.borderColor="rgba(212,167,61,.3)"; (e.currentTarget as HTMLElement).style.color=G; }}}
+              onMouseLeave={e => { if(active!==c.id){ (e.currentTarget as HTMLElement).style.borderColor="rgba(255,255,255,.08)"; (e.currentTarget as HTMLElement).style.color="#7A8FA8"; }}}>
               <span>{c.icon}</span><span>{c.label}</span>
-            </a>
+            </button>
           ))}
         </div>
       </div>
 
-      {/* Products by category */}
-      <section style={{padding:"5rem 2rem 7rem",background:"#010408"}}>
-        <div style={{maxWidth:"1280px",margin:"0 auto"}}>
-          {categories.map(cat=>{
-            const list=products.filter(p=>p.cat===cat.id);
-            if(!list.length) return null;
-            return(
-              <div key={cat.id} id={cat.id} style={{marginBottom:"5rem"}}>
-                <div style={{display:"flex",alignItems:"center",gap:"1rem",marginBottom:"2rem"}}>
-                  <span style={{fontSize:"1.5rem"}}>{cat.icon}</span>
-                  <h2 className="fd" style={{fontSize:"clamp(1.8rem,3.5vw,2.5rem)",fontWeight:"300"}}>{cat.label}</h2>
-                  <div style={{flex:1,height:"1px",background:"linear-gradient(90deg,rgba(212,167,61,.3),transparent)"}}/>
+      {/* Body */}
+      <section style={{ padding:"5rem 2rem 7rem", background:"#010408" }}>
+        <div style={{ maxWidth:"1280px", margin:"0 auto" }}>
+
+          {/* Loading */}
+          {loading && (
+            <div style={{ textAlign:"center", padding:"6rem" }}>
+              <div style={{ width:"36px", height:"36px", border:"2px solid rgba(212,167,61,.2)", borderTop:`2px solid ${G}`, borderRadius:"50%", animation:"spin .8s linear infinite", margin:"0 auto" }}/>
+              <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
+            </div>
+          )}
+
+          {/* Error */}
+          {error && <p style={{ color:"#f87171", fontFamily:"monospace", fontSize:".7rem" }}>{error}</p>}
+
+          {/* No products */}
+          {!loading && !error && filtered.length===0 && (
+            <p style={{ color:"#2E4060", fontFamily:"monospace", fontSize:".65rem", letterSpacing:".1em" }}>
+              NO PRODUCTS IN THIS CATEGORY YET
+            </p>
+          )}
+
+          {/* Products grouped by category */}
+          {!loading && !error && groups.map(cat => {
+            const list = active==="All"
+              ? products.filter(p => p.category===cat.id)
+              : filtered;
+            if (!list.length) return null;
+            return (
+              <div key={cat.id} id={cat.id} style={{ marginBottom:"5rem" }}>
+                {/* Section heading */}
+                <div style={{ display:"flex", alignItems:"center", gap:"1rem", marginBottom:"2rem" }}>
+                  <span style={{ fontSize:"1.5rem" }}>{cat.icon}</span>
+                  <h2 className="fd" style={{ fontSize:"clamp(1.8rem,3.5vw,2.5rem)", fontWeight:"300" }}>{cat.label}</h2>
+                  <div style={{ flex:1, height:"1px", background:`linear-gradient(90deg,rgba(212,167,61,.3),transparent)` }}/>
                 </div>
-                <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(300px,1fr))",gap:"1.25rem"}}>
-                  {list.map(p=>(
-                    <div key={p.name} style={{background:"rgba(255,255,255,.02)",border:"1px solid rgba(255,255,255,.07)",borderRadius:"14px",overflow:"hidden",transition:"all .3s"}}
-                      onMouseEnter={e=>{const el=e.currentTarget as HTMLElement;el.style.borderColor="rgba(212,167,61,.22)";el.style.transform="translateY(-4px)";el.style.boxShadow="0 20px 60px rgba(0,0,0,.4)";}}
-                      onMouseLeave={e=>{const el=e.currentTarget as HTMLElement;el.style.borderColor="rgba(255,255,255,.07)";el.style.transform="none";el.style.boxShadow="none";}}>
-                      <SiteImage imageKey={p.imgKey} asBackground style={{height:"180px",position:"relative",borderBottom:"1px solid rgba(255,255,255,.06)"}}>
-                        <div style={{position:"absolute",inset:0,background:"linear-gradient(to top,rgba(1,4,8,.6) 0%,transparent 60%)"}}/>
-                      </SiteImage>
-                      <div style={{padding:"1.5rem"}}>
-                        <h3 style={{fontSize:"1rem",fontWeight:"600",marginBottom:".5rem"}}>{p.name}</h3>
-                        <p style={{color:"#7A8FA8",fontSize:".82rem",lineHeight:"1.65",marginBottom:"1rem"}}>{p.desc}</p>
-                        <div style={{display:"flex",flexDirection:"column",gap:".4rem",marginBottom:"1.25rem"}}>
-                          <div style={{display:"flex",gap:".6rem"}}><span style={{fontFamily:"monospace",fontSize:".6rem",color:"#2E4060",width:"65px",flexShrink:0}}>SIZE</span><span style={{fontSize:".8rem",color:"#EDE8DC"}}>{p.spec}</span></div>
-                          <div style={{display:"flex",gap:".6rem"}}><span style={{fontFamily:"monospace",fontSize:".6rem",color:"#2E4060",width:"65px",flexShrink:0}}>MATERIAL</span><span style={{fontSize:".8rem",color:"#EDE8DC"}}>{p.material}</span></div>
-                        </div>
-                        <a href="mailto:support@bhdeco.ai?subject=Product Inquiry" className="btn-outline" style={{width:"100%",justifyContent:"center",fontSize:".72rem",padding:".7rem 1rem"}}>GET QUOTE →</a>
+
+                {/* Card grid */}
+                <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(300px,1fr))", gap:"1.25rem" }}>
+                  {list.map(p => (
+                    <div key={p.id}
+                      style={{ background:"rgba(255,255,255,.02)", border:"1px solid rgba(255,255,255,.07)", borderRadius:"14px", overflow:"hidden", transition:"all .3s" }}
+                      onMouseEnter={e => { const el=e.currentTarget as HTMLElement; el.style.borderColor="rgba(212,167,61,.22)"; el.style.transform="translateY(-4px)"; el.style.boxShadow="0 20px 60px rgba(0,0,0,.4)"; }}
+                      onMouseLeave={e => { const el=e.currentTarget as HTMLElement; el.style.borderColor="rgba(255,255,255,.07)"; el.style.transform="none"; el.style.boxShadow="none"; }}>
+
+                      {/* Cover image */}
+                      <div style={{ height:"180px", position:"relative", borderBottom:"1px solid rgba(255,255,255,.06)", overflow:"hidden" }}>
+                        {p.cover_image_url ? (
+                          <div style={{ position:"absolute", inset:0, backgroundImage:`url(${p.cover_image_url})`, backgroundSize:"cover", backgroundPosition:"center" }}>
+                            <div style={{ position:"absolute", inset:0, background:"linear-gradient(to top,rgba(1,4,8,.6) 0%,transparent 60%)" }}/>
+                          </div>
+                        ) : (
+                          <div style={{ position:"absolute", inset:0, background:"rgba(212,167,61,.03)", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                            <span style={{ fontSize:"2.5rem", opacity:.15 }}>{cat.icon}</span>
+                          </div>
+                        )}
+                        {p.featured && (
+                          <div style={{ position:"absolute", top:".75rem", right:".75rem" }}>
+                            <span style={{ fontFamily:"monospace", fontSize:".52rem", color:"#010408", background:G, borderRadius:"100px", padding:".18rem .55rem" }}>★ FEATURED</span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Card body */}
+                      <div style={{ padding:"1.5rem" }}>
+                        <h3 style={{ fontSize:"1rem", fontWeight:"600", marginBottom:".3rem" }}>{p.name}</h3>
+                        {p.sub_category && (
+                          <p style={{ fontFamily:"monospace", fontSize:".6rem", color:G, letterSpacing:".08em", marginBottom:".5rem" }}>{p.sub_category}</p>
+                        )}
+                        {p.description && (
+                          <p style={{ color:"#7A8FA8", fontSize:".82rem", lineHeight:"1.65", marginBottom:"1rem" }}>{p.description}</p>
+                        )}
+                        {p.price && (
+                          <div style={{ display:"flex", gap:".6rem", marginBottom:"1.25rem" }}>
+                            <span style={{ fontFamily:"monospace", fontSize:".6rem", color:"#2E4060", width:"65px", flexShrink:0 }}>PRICE</span>
+                            <span style={{ fontSize:".8rem", color:"#EDE8DC" }}>{p.price}</span>
+                          </div>
+                        )}
+                        <a href="mailto:support@bhdeco.ai?subject=Product Inquiry"
+                          className="btn-outline"
+                          style={{ width:"100%", justifyContent:"center", fontSize:".72rem", padding:".7rem 1rem" }}>
+                          GET QUOTE →
+                        </a>
                       </div>
                     </div>
                   ))}
@@ -114,6 +213,7 @@ export default function Products() {
           })}
         </div>
       </section>
+
       <Footer/>
     </div>
   );
