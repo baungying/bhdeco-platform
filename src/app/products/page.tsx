@@ -199,11 +199,51 @@ export default function Products() {
                             <span style={{ fontSize:".8rem", color:"#EDE8DC" }}>{p.price}</span>
                           </div>
                         )}
-                        <a href="mailto:support@bhdeco.ai?subject=Product Inquiry"
-                          className="btn-outline"
-                          style={{ width:"100%", justifyContent:"center", fontSize:".72rem", padding:".7rem 1rem" }}>
-                          GET QUOTE →
-                        </a>
+                        <div
+  style={{
+    display:"flex",
+    gap:".75rem",
+    marginTop:"1rem"
+  }}
+>
+
+  <a
+    href="tel:+959xxxxxxxxx"
+    style={{
+      flex:1,
+      textAlign:"center",
+      padding:".75rem",
+      borderRadius:"10px",
+      border:"1px solid rgba(212,167,61,.35)",
+      background:"rgba(212,167,61,.08)",
+      color:"#D4A73D",
+      textDecoration:"none",
+      fontSize:".75rem",
+      fontWeight:600,
+    }}
+  >
+    📞 CALL
+  </a>
+
+  <a
+    href="viber://chat?number=%2B959xxxxxxxxx"
+    style={{
+      flex:1,
+      textAlign:"center",
+      padding:".75rem",
+      borderRadius:"10px",
+      border:"1px solid rgba(255,255,255,.08)",
+      background:"rgba(255,255,255,.03)",
+      color:"#EDE8DC",
+      textDecoration:"none",
+      fontSize:".75rem",
+      fontWeight:600,
+    }}
+  >
+    💜 VIBER
+  </a>
+
+</div>
                       </div>
                     </div>
                   ))}
