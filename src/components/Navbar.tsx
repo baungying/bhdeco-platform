@@ -66,7 +66,7 @@ function CreditsBadge({ credits, accent }: { credits: number; accent: string }) 
       onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = `${accent}12`; (e.currentTarget as HTMLElement).style.borderColor = `${accent}30`; }}>
       <span style={{ fontSize: ".7rem" }}>⬡</span>
       <span className="mono" style={{ fontSize: ".62rem", color: accent, fontWeight: "600" }}>
-        {credits.toLocaleString("en-US")}
+        {credits.toLocaleString()}
       </span>
     </Link>
   );
@@ -203,19 +203,40 @@ export default function Navbar({ accent = "#D4A73D" }: { accent?: string }) {
     ["/", t.nav_home],
     ["/ai-design", t.nav_ai],
     ["/furniture", t.nav_furniture],
-    ["/products", t.nav_products],
+    ["/projects",  t.nav_projects],
+    ["/products",  t.nav_products],
     ["/courses", t.nav_courses],
     ["/pricing", t.nav_pricing],
     ["/about", t.nav_about],
     ["/contact", t.nav_contact],
   ];
 
-  // Guard: path is null on server — return false to ensure server/client HTML matches
-  const isActive = (href: string) => !path ? false : href === "/" ? path === "/" : path.startsWith(href);
+  const isActive = (href: string) => href === "/" ? path === "/" : path?.startsWith(href);
 
-  // ── Right side: guest vs logged-in ─────────────────────────────────────────
-  // NOTE: defined as JSX inline (not inner components) to avoid React treating
-  // them as new component types on every render, which causes hydration warnings.
+  // ── Right side: guest vs logged-in ────────────────────────────────────────
+  const GuestActions = () => (
+    <>
+      <Link href="/login" style={{ fontSize:".72rem",color:"#7A8FA8",textDecoration:"none",padding:".38rem .72rem",borderRadius:"5px",transition:"color .2s",whiteSpace:"nowrap" }}
+        onMouseEnter={e => (e.currentTarget.style.color = accent)}
+        onMouseLeave={e => (e.currentTarget.style.color = "#7A8FA8")}>
+        {t.nav_login}
+      </Link>
+      <a href="https://bh-deco-ai.vercel.app" target="_blank" rel="noopener noreferrer"
+        className="btn-gold" style={{ padding:".52rem 1.2rem", fontSize:".7rem" }}>
+        {t.nav_start}
+      </a>
+    </>
+  );
+
+  const LoggedInActions = () => (
+    <>
+      <CreditsBadge credits={profile!.credits} accent={accent} />
+      <Link href="/dashboard" className="btn-gold" style={{ padding:".52rem 1.2rem", fontSize:".7rem" }}>
+        Dashboard
+      </Link>
+      <UserMenu profile={profile!} accent={accent} onSignOut={handleSignOut} />
+    </>
+  );
 
   return (
     <>
@@ -242,27 +263,7 @@ export default function Navbar({ accent = "#D4A73D" }: { accent?: string }) {
           <div style={{ display:"flex",alignItems:"center",gap:".5rem",flexShrink:0 }}>
             <LangPicker accent={accent} />
             {/* Only render auth UI after session check to avoid flash */}
-            {authReady && (profile ? (
-              <>
-                <CreditsBadge credits={profile.credits} accent={accent} />
-                <Link href="/dashboard" className="btn-gold" style={{ padding:".52rem 1.2rem", fontSize:".7rem" }}>
-                  Dashboard
-                </Link>
-                <UserMenu profile={profile} accent={accent} onSignOut={handleSignOut} />
-              </>
-            ) : (
-              <>
-                <Link href="/login" style={{ fontSize:".72rem",color:"#7A8FA8",textDecoration:"none",padding:".38rem .72rem",borderRadius:"5px",transition:"color .2s",whiteSpace:"nowrap" }}
-                  onMouseEnter={e => (e.currentTarget.style.color = accent)}
-                  onMouseLeave={e => (e.currentTarget.style.color = "#7A8FA8")}>
-                  {t.nav_login}
-                </Link>
-                <a href="https://bh-deco-ai.vercel.app" target="_blank" rel="noopener noreferrer"
-                  className="btn-gold" style={{ padding:".52rem 1.2rem", fontSize:".7rem" }}>
-                  {t.nav_start}
-                </a>
-              </>
-            ))}
+            {authReady && (profile ? <LoggedInActions /> : <GuestActions />)}
             {/* Mobile hamburger */}
             <button onClick={() => setOpen(!open)} className="bh-mob" aria-label="menu"
               style={{ background:"none",border:"none",cursor:"pointer",padding:".4rem",display:"none",flexDirection:"column",gap:"4px" }}>
@@ -287,7 +288,7 @@ export default function Navbar({ accent = "#D4A73D" }: { accent?: string }) {
             {authReady && profile ? (
               <>
                 <div style={{ padding:".7rem .75rem",fontSize:".78rem",color:"#7A8FA8",borderBottom:"1px solid rgba(255,255,255,.04)" }}>
-                  {profile.email} · <span style={{ color: accent }}>⬡ {profile.credits.toLocaleString("en-US")}</span>
+                  {profile.email} · <span style={{ color: accent }}>⬡ {profile.credits.toLocaleString()}</span>
                 </div>
                 <Link href="/dashboard" onClick={() => setOpen(false)} className="btn-gold" style={{ width:"100%",justifyContent:"center" }}>
                   Dashboard →
